@@ -13,8 +13,10 @@ Instancia::Instancia() {
 
         // Peso maximo
         arq >> this->pesoMax;
+        
         // Criando o vetor de itens
         Item aux;
+        aux.nRest = 0;
         for (int i=0; i<this->nItens; i++) {
             aux.index = i;
             this->itens.push_back(aux);
@@ -51,6 +53,8 @@ Instancia::Instancia() {
 
             this->restricoes[a][b] = 1;
             this->restricoes[b][a] = 1;
+            this->itens[a].nRest++;
+            this->itens[b].nRest++;
         }
     }
     else {
@@ -74,6 +78,7 @@ Instancia::Instancia(string caminhoArquivo) {
 
         // Criando o vetor de itens
         Item aux;
+        aux.nRest = 0;
         for (int i=0; i<this->nItens; i++) {
             aux.index = i;
             this->itens.push_back(aux);
@@ -103,8 +108,15 @@ Instancia::Instancia(string caminhoArquivo) {
             int a, b;
             arq >> a;
             arq >> b;
+
+            // Corrigindo para index
+            a--;
+            b--;
+
             this->restricoes[a][b] = 1;
             this->restricoes[b][a] = 1;
+            this->itens[a].nRest++;
+            this->itens[b].nRest++;
         }
     }
     else {

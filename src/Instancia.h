@@ -1,7 +1,7 @@
 #ifndef INSTANCIA_H
 #define INSTANCIA_H
 
-#define CAMINHO_PADRAO "./instancias/K10.txt"
+#define CAMINHO_PADRAO "./instancias/I1_I10/1I1"
 
 #include <iostream>
 #include <fstream>

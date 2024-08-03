@@ -8,6 +8,7 @@ using std::vector, std::cout, std::endl;
 
 typedef vector<int> Solucao;
 
+Solucao geraMochilaVazia(int n);
 void imprimeSol(Solucao& sol);
 
 #endif
