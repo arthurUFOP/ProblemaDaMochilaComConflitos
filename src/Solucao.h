@@ -9,6 +9,6 @@ using std::vector, std::cout, std::endl;
 typedef vector<int> Solucao;
 
 Solucao geraMochilaVazia(int n);
-void imprimeSol(Solucao& sol);
+void imprimeSol(const Solucao& sol);
 
 #endif

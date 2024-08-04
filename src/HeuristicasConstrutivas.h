@@ -1,6 +1,7 @@
 #ifndef HEURISTICAS_CONSTRUTIVAS_H
 #define HEURISTICAS_CONSTRUTIVAS_H
 
+#include <stdlib.h>
 #include <iostream>
 #include <map>
 #include <vector>
@@ -17,7 +18,7 @@ typedef map<int, int> ParametrosExtra;
 // Tudo que uma heuristica construtiva faz eh gerar uma solucao a partir de uma instancia
 class HeuristicaConstrutiva {
 public:
-    virtual Solucao gerarSolucao(Instancia& inst, ParametrosExtra pExtra)=0;
+    virtual Solucao gerarSolucao(Instancia& inst, ParametrosExtra pExtra=ParametrosExtra())=0;
 };
 
 class DecomposicaoGulosa : public HeuristicaConstrutiva {
@@ -26,6 +27,15 @@ public:
     ~DecomposicaoGulosa();
     
     Solucao decomposicaoGulosa(Instancia& inst, ParametrosExtra pExtra);
+    Solucao gerarSolucao(Instancia& inst, ParametrosExtra pExtra=ParametrosExtra());
+};
+
+class DecomposicaoAleatoria : public HeuristicaConstrutiva {
+public:
+    DecomposicaoAleatoria();
+    ~DecomposicaoAleatoria();
+    
+    Solucao decomposicaoAleatoria(Instancia& inst);
     Solucao gerarSolucao(Instancia& inst, ParametrosExtra pExtra=ParametrosExtra());
 };
 

@@ -1,61 +1,8 @@
 #include "HeuristicasConstrutivas.h"
 
-/*
-    Artigo referencia: 
-        Matheuristicas para o problema da mochila com restricao de conflitos
-        Adriano Rodrigues Alves, Edna A. Hoshino
-    
-    Metodos de decomposicao (3.1.) --> DecomposicaoGulosa
-        Primeiro resolve o problema das restrições (em essencia um conjunto independente) através de uma heuristica.
-        Depois utiliza o método exato sobre o subproblema gerado. Irei testar com heuristica nesse passo tambem!
-*/
-
-// Comparador entre itens (valor)
-struct sCompValor {
-  bool operator() (Item i,Item j) {return (i.valor<j.valor);}
-} CompValor;
-
-// Comparador entre itens (n. Restricoes, DESCENDENTE)
-struct sCompRest {
-  bool operator() (Item i,Item j) {return (i.nRest>j.nRest);}
-} CompRest;
-
-DecomposicaoGulosa::DecomposicaoGulosa() {}
-DecomposicaoGulosa::~DecomposicaoGulosa() {}
-
-// Algoritmo 1 do paper
-// OBS.: MODULARIZAR DEPOIS PARA SER GULOSO COM CRITERIOS DIFERENTES
-// pExtra[0] == 0 -> valor
-// Qualquer outra coisa -> n. de restricoes
-Solucao DecomposicaoGulosa::decomposicaoGulosa(Instancia& inst, ParametrosExtra pExtra) { 
-    Solucao sol = geraMochilaVazia(inst.nItens);
-
-    // Candidatos ordenados por seu valor
-    vector<Item> listaCandidatos = inst.itens;
-
-    // Ordenar de acordo com o parametro passado
-    if (pExtra[0])
-        sort(listaCandidatos.begin(), listaCandidatos.end(), CompValor);
-    else
-        sort(listaCandidatos.begin(), listaCandidatos.end(), CompRest);
-
-    while (!listaCandidatos.empty()) {
-        int indexSelecionado = listaCandidatos.back().index; // Candidato de maior valor
-        sol.at(indexSelecionado) = 1; // Adiciona o candidato de maior valor
-        listaCandidatos.pop_back(); // Remove ele da lista de candidatos
-
-        // Verifica quais candidatos sao incompativeis com o recentemente adicionado
-        vector<int> indexesRemover = vector<int>();
-        for (int i=0; i<listaCandidatos.size(); i++) 
-            if (inst.restricoes[indexSelecionado][listaCandidatos.at(i).index]) 
-                indexesRemover.push_back(i);
-        
-        // Remove tais candidatos
-        for (auto it=indexesRemover.rbegin(); it<indexesRemover.rend(); it++) // Remover de tras pra frente para nao baguncar os indices
-            listaCandidatos.erase(listaCandidatos.begin()+(*it));
-    }
-    return sol;
-}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////// MÉTODOS EXATOS //////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Solucao backtrack(Instancia& inst, Solucao& melhorSol, float* melhorFo, Solucao& solAtual, vector<Item>& itens, int i, float pesoAtual) {
     // Caso de parada: cheguei ao último item ou excedi o peso máximo
@@ -120,8 +67,135 @@ Solucao backtrackComIteracaoMaxima(Instancia& inst, Solucao& melhorSol, float* m
     return melhorSol;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////// Decomposicao Gulosa //////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/*
+    Artigo referencia: 
+        Matheuristicas para o problema da mochila com restricao de conflitos
+        Adriano Rodrigues Alves, Edna A. Hoshino
+    
+    Metodos de decomposicao (3.1.) --> DecomposicaoGulosa
+        Primeiro resolve o problema das restrições (em essencia um conjunto independente) através de uma heuristica gulosa.
+        Depois utiliza o método exato sobre o subproblema gerado. Irei testar com heuristica nesse passo tambem!
+*/
+
+// Comparador entre itens (valor)
+struct sCompValor {
+  bool operator() (Item i,Item j) {return (i.valor<j.valor);}
+} CompValor;
+
+// Comparador entre itens (n. Restricoes, DESCENDENTE)
+struct sCompRest {
+  bool operator() (Item i,Item j) {return (i.nRest>j.nRest);}
+} CompRest;
+
+DecomposicaoGulosa::DecomposicaoGulosa() {}
+DecomposicaoGulosa::~DecomposicaoGulosa() {}
+
+// Algoritmo 1 do paper
+// OBS.: MODULARIZAR DEPOIS PARA SER GULOSO COM CRITERIOS DIFERENTES
+// pExtra[0] == 0 -> valor
+// Qualquer outra coisa -> n. de restricoes
+Solucao DecomposicaoGulosa::decomposicaoGulosa(Instancia& inst, ParametrosExtra pExtra) { 
+    Solucao sol = geraMochilaVazia(inst.nItens);
+
+    // Candidatos ordenados por seu valor
+    vector<Item> listaCandidatos = inst.itens;
+
+    // Ordenar de acordo com o parametro passado
+    if (pExtra[0])
+        sort(listaCandidatos.begin(), listaCandidatos.end(), CompValor);
+    else
+        sort(listaCandidatos.begin(), listaCandidatos.end(), CompRest);
+
+    while (!listaCandidatos.empty()) {
+        int indexSelecionado = listaCandidatos.back().index; // Candidato de maior metrica
+        sol.at(indexSelecionado) = 1; // Adiciona o candidato de maior metrica
+        listaCandidatos.pop_back(); // Remove ele da lista de candidatos
+
+        // Verifica quais candidatos sao incompativeis com o recentemente adicionado
+        vector<int> indexesRemover = vector<int>();
+        for (int i=0; i<listaCandidatos.size(); i++) 
+            if (inst.restricoes[indexSelecionado][listaCandidatos.at(i).index]) 
+                indexesRemover.push_back(i);
+        
+        // Remove tais candidatos
+        for (auto it=indexesRemover.rbegin(); it<indexesRemover.rend(); it++) // Remover de tras pra frente para nao baguncar os indices
+            listaCandidatos.erase(listaCandidatos.begin()+(*it));
+    }
+    return sol;
+}
+
 Solucao DecomposicaoGulosa::gerarSolucao(Instancia& inst, ParametrosExtra pExtra) {
     Solucao solReferencia = this->decomposicaoGulosa(inst, pExtra);
+
+    // Vetor apenas com o subconjunto de itens nao conflitantes entre si
+    vector<Item> itensValidos;
+    for (int i=0; i<solReferencia.size(); i++)
+        if (solReferencia.at(i))
+            itensValidos.push_back(inst.itens.at(i));
+
+    // Solucao do subproblema com metodo exato
+    Solucao melhorSol = geraMochilaVazia(inst.nItens);
+    Solucao sol = geraMochilaVazia(inst.nItens);
+    float melhorFo = 0;
+    //melhorSol = backtrack(inst, melhorSol, &melhorFo, sol, itensValidos, 0, 0);
+
+    int iter = 0;
+    bool continua = true;
+    melhorSol = backtrackComIteracaoMaxima(inst, melhorSol, &melhorFo, sol, itensValidos, 0, 0, &iter, 10000, &continua);
+
+    return melhorSol;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////Decomposicao Aleatoria////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*
+    Artigo referencia: 
+        Matheuristicas para o problema da mochila com restricao de conflitos
+        Adriano Rodrigues Alves, Edna A. Hoshino
+    
+    Metodos de decomposicao (3.1.) --> DecomposicaoAleatoria
+        Primeiro resolve o problema das restrições (em essencia um conjunto independente) através de uma heuristica randomica.
+        Depois utiliza o método exato sobre o subproblema gerado. Irei testar com heuristica nesse passo tambem!
+*/
+
+DecomposicaoAleatoria::DecomposicaoAleatoria() {}
+DecomposicaoAleatoria::~DecomposicaoAleatoria() {}
+
+// Algoritmo 2 do paper
+Solucao DecomposicaoAleatoria::decomposicaoAleatoria(Instancia& inst) {
+    Solucao sol = geraMochilaVazia(inst.nItens);
+
+    // Candidatos
+    vector<Item> listaCandidatos = inst.itens;
+        
+    while (!listaCandidatos.empty()) {
+        int randValor = rand()%listaCandidatos.size();
+        int indexSelecionado = listaCandidatos.at(randValor).index; // Candidato escolhido
+        sol.at(indexSelecionado) = 1; // Adiciona o candidato a solucao
+        listaCandidatos.erase(listaCandidatos.begin()+randValor); // Remove ele da lista de candidatos
+
+        // Verifica quais candidatos sao incompativeis com o recentemente adicionado
+        vector<int> indexesRemover = vector<int>();
+        for (int i=0; i<listaCandidatos.size(); i++) 
+            if (inst.restricoes[indexSelecionado][listaCandidatos.at(i).index]) 
+                indexesRemover.push_back(i);
+        
+        // Remove tais candidatos
+        for (auto it=indexesRemover.rbegin(); it<indexesRemover.rend(); it++) // Remover de tras pra frente para nao baguncar os indices
+            listaCandidatos.erase(listaCandidatos.begin()+(*it));
+    }
+    return sol;
+}
+
+Solucao DecomposicaoAleatoria::gerarSolucao(Instancia& inst, ParametrosExtra pExtra) { // pExtra nao eh utilizado
+    Solucao solReferencia = this->decomposicaoAleatoria(inst);
 
     // Vetor apenas com o subconjunto de itens nao conflitantes entre si
     vector<Item> itensValidos;
