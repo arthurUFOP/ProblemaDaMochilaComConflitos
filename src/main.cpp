@@ -7,7 +7,7 @@
 int main() {
     srand(time(NULL));
     Instancia inst;
-    HeuristicaConstrutiva* heuristicaConstrutiva = new DecomposicaoAleatoria();
+    HeuristicaConstrutiva* heuristicaConstrutiva = new InsercaoAleatoria();
     Solucao sol = heuristicaConstrutiva->gerarSolucao(inst);
     cout << "Solucao obtida: ";
     imprimeSol(sol);

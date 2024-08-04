@@ -39,5 +39,21 @@ public:
     Solucao gerarSolucao(Instancia& inst, ParametrosExtra pExtra=ParametrosExtra());
 };
 
+class InsercaoGulosa : public HeuristicaConstrutiva {
+public:
+    InsercaoGulosa();
+    ~InsercaoGulosa();
+
+    Solucao gerarSolucao(Instancia& inst, ParametrosExtra pExtra=ParametrosExtra());
+};
+
+class InsercaoAleatoria : public HeuristicaConstrutiva {
+public:
+    InsercaoAleatoria();
+    ~InsercaoAleatoria();
+
+    Solucao gerarSolucao(Instancia& inst, ParametrosExtra pExtra=ParametrosExtra());
+};
+
 
 #endif

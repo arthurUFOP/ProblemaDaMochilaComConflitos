@@ -215,3 +215,92 @@ Solucao DecomposicaoAleatoria::gerarSolucao(Instancia& inst, ParametrosExtra pEx
 
     return melhorSol;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////Insercao Gulosa///////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*
+Pseudocódigo:
+
+Enquanto LC != {}
+    1. Seleciono item mais valioso da LC e o removo da LC
+        1.1. Se couber na mochila, o adiciono, e removo itens conflitantes com o item adicionado da LC
+*/
+
+
+InsercaoGulosa::InsercaoGulosa() {}
+InsercaoGulosa::~InsercaoGulosa() {}
+
+Solucao InsercaoGulosa::gerarSolucao(Instancia& inst, ParametrosExtra pExtra) {
+    Solucao sol = geraMochilaVazia(inst.nItens);
+
+    // Candidatos ordenados por seu valor
+    vector<Item> listaCandidatos = inst.itens;
+
+    // Ordenar pelo valor
+    sort(listaCandidatos.begin(), listaCandidatos.end(), CompValor);
+
+    float pesoAtual = 0;
+
+    while (!listaCandidatos.empty()) {
+        Item itemSelecionado = listaCandidatos.back(); // Como esta ordenada a LC, este sempre sera o candidato de maior valor
+        listaCandidatos.pop_back();
+
+        // Verifica se o item mais valioso cabe na mochila
+        if (pesoAtual+itemSelecionado.peso <= inst.pesoMax) {
+            pesoAtual+=itemSelecionado.peso;
+            sol.at(itemSelecionado.index) = 1; // Se couber, o adiciona
+
+            // Remove os itens conflitantes da LC (OBS.: De tras pra frente pra nao ter problemas com indices)
+            for (int i=listaCandidatos.size()-1; i>=0; i--) 
+                if (inst.restricoes[itemSelecionado.index][listaCandidatos.at(i).index])
+                    listaCandidatos.erase(listaCandidatos.begin()+i);
+        }
+    }
+
+    return sol;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////Insercao Aleatoria////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/*
+Pseudocódigo:
+
+Enquanto LC != {}
+    1. Seleciono item aleatorio da LC e o removo da LC
+        1.1. Se couber na mochila, o adiciono, e removo itens conflitantes com o item adicionado da LC
+*/
+
+InsercaoAleatoria::InsercaoAleatoria() {}
+InsercaoAleatoria::~InsercaoAleatoria() {}
+
+Solucao InsercaoAleatoria::gerarSolucao(Instancia& inst, ParametrosExtra pExtra) {
+    Solucao sol = geraMochilaVazia(inst.nItens);
+
+    // Candidatos
+    vector<Item> listaCandidatos = inst.itens;
+
+    float pesoAtual = 0;
+        
+    while (!listaCandidatos.empty()) {
+        int randValor = rand()%listaCandidatos.size();
+        Item itemSelecionado = listaCandidatos.at(randValor); // Candidato escolhido
+        listaCandidatos.erase(listaCandidatos.begin()+randValor); // Remove ele da lista de candidatos
+
+        // Verifica se o item mais valioso cabe na mochila
+        if (pesoAtual+itemSelecionado.peso <= inst.pesoMax) {
+            pesoAtual+=itemSelecionado.peso;
+            sol.at(itemSelecionado.index) = 1; // Se couber, o adiciona
+
+            // Remove os itens conflitantes da LC (OBS.: De tras pra frente pra nao ter problemas com indices)
+            for (int i=listaCandidatos.size()-1; i>=0; i--) 
+                if (inst.restricoes[itemSelecionado.index][listaCandidatos.at(i).index])
+                    listaCandidatos.erase(listaCandidatos.begin()+i);
+        }
+    }
+    
+    return sol;
+}
