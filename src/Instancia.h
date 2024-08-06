@@ -22,6 +22,7 @@ public:
     vector<Item> itens;
     Instancia();
     Instancia(string caminhoArquivo);
+    Instancia(int nItens, float pesoMax, vector<Item> itens); // Instancia para CPLEX
     ~Instancia();
 
     void printInstancia(bool printarItens=false);

@@ -47,7 +47,8 @@ int menuHeuristicaConstrutiva()
 }
 
 int main(int argc, char** argv) {
-    srand(time(NULL));
+    srand(712347);
+    //srand(time(NULL));
 
     // Leitura da instancia (ou informada por linha de comando, ou caminho default)
     Instancia* inst;
@@ -117,6 +118,7 @@ int main(int argc, char** argv) {
                 << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
                 << "Peso Maximo da Mochila: " << inst->pesoMax << endl
                 << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+                break;
             }
 
             // Busca Local

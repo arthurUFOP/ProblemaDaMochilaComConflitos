@@ -10,6 +10,7 @@
 #include "Solucao.h"
 #include "Item.h"
 #include "Avaliador.h"
+#include "MetodosExatos.h"
 
 using std::map, std::sort, std::vector;
 typedef map<int, int> ParametrosExtra;

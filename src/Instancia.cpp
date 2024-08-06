@@ -152,3 +152,17 @@ void Instancia::printInstancia(bool printarItens) {
         cout << endl << "-------------" << endl;
     }
 }
+
+
+// Instancia Vazia, util para CPLEX
+Instancia::Instancia(int nItens, float pesoMax, vector<Item> itens) {
+    this->nItens = nItens;
+    this->pesoMax = pesoMax;
+    this->itens = itens;
+
+    // Alocando a matriz de restricoes (caso do cplex eh inutil, mas evita problemas com o destrutor)
+    this->restricoes = new int*[this->nRest];
+    for (int i=0; i<this->nRest; i++)
+        this->restricoes[i] = new int[this->nRest];
+
+}
