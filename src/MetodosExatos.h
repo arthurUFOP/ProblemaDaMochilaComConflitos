@@ -10,7 +10,7 @@ public:
 };
 
 // Gera a solucao otima para o problema da mochila 0-1 convencional.
-class CPLEXMochilaBasico {
+class CPLEXMochilaBasico : public MetodoExato {
 private:
     float tolerancia;
     bool verbose;

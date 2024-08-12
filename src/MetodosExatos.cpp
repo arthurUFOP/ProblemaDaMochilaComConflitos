@@ -24,40 +24,44 @@ Solucao CPLEXMochilaBasico::gerarSolucaoOtima(Instancia& inst) {
     IloEnv env;
     try {
         // Criação do modelo CPLEX
-        IloModel model(env);
+        IloModel modelo(env);
 
         // Dados do problema
         int numItems = inst.nItens;
-        int capacities = inst.pesoMax;
+        int capacidadeMax = inst.pesoMax;
         //int values[] = {60, 100, 120, 80, 90}; // Valores dos itens
         //int weights[] = {10, 20, 30, 15, 25}; // Pesos dos itens
 
         // Definindo variáveis binárias para cada item
         vector<IloNumVar> x(numItems);
-        for (int i = 0; i < numItems; ++i) {
+        for (int i=0; i<numItems; i++) {
             x[i] = IloNumVar(env, 0, 1, ILOINT);
-            model.add(x[i]);
+            modelo.add(x[i]);
         }
 
         // Adiciona a função objetivo: maximizar a soma dos valores dos itens
-        IloObjective objective = IloMaximize(env);
+        IloObjective objetivo = IloMaximize(env);
         IloExpr objExpr(env);
-        for (int i = 0; i < numItems; ++i) {
+        for (int i=0; i<numItems; i++) {
             objExpr += inst.itens.at(i).valor * x[i];
         }
-        objective.setExpr(objExpr);
-        model.add(objective);
+        objetivo.setExpr(objExpr);
+        modelo.add(objetivo);
 
         // Adiciona a restrição de capacidade da mochila
-        IloExpr capacityExpr(env);
-        for (int i = 0; i < numItems; ++i) {
-            capacityExpr += inst.itens.at(i).peso * x[i];
+        IloExpr capacidadeExpr(env);
+        for (int i=0; i<numItems; i++) {
+            capacidadeExpr += inst.itens.at(i).peso * x[i];
         }
-        model.add(capacityExpr <= capacities);
+        modelo.add(capacidadeExpr <= capacidadeMax);
 
         // Criação do solucionador CPLEX e resolução do modelo
-        IloCplex cplex(model);
+        IloCplex cplex(modelo);
         cplex.setParam(IloCplex::Param::MIP::Tolerances::MIPGap, this->tolerancia); // Garante com nivel de tolerancia do otimo
+        cplex.setOut(env.getImpl()->getNullStream());
+        cplex.setOut(env.getNullStream());
+        cplex.setWarning(env.getNullStream());
+        cplex.setError(env.getNullStream());
         // Ex.: tolerancia=0.2 -> Solução com lacuna de até 20% do ótimo
 
         // Encontrou solucao
@@ -71,11 +75,11 @@ Solucao CPLEXMochilaBasico::gerarSolucaoOtima(Instancia& inst) {
             }
 
             // Salvando a solucao encontrada em sol
-            for (int i = 0; i < numItems; ++i) {
+            for (int i=0; i<numItems; i++) {
                 double value = cplex.getValue(x[i]);
                 sol.at(inst.itens.at(i).index) = value;
 
-                if (verbose)
+                if (this->verbose)
                     cout << "x[" << i << "] = " << value << endl;
             }
         } 

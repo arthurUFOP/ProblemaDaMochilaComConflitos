@@ -13,17 +13,21 @@ OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(BIN_DIR)/%.o)
 
 # Compilarei monolito
 # Me perdooem engenheiros de software :(
-all:
-	$(CXX) $(CXXFLAGS) $(CPLEX_FLAGS) ./src/*.cpp -o $(TARGET) $(CPLEX_LIBS)
+
+#all:
+#	$(CXX) $(CXXFLAGS) $(CPLEX_FLAGS) ./src/*.cpp -o $(TARGET) $(CPLEX_LIBS)
 
 # Regras
-#all: $(TARGET)
+all: $(TARGET)
 
-#$(TARGET): $(OBJS)
-#	$(CXX) $(CXXFLAGS) $(CPLEX_FLAGS) $(OBJS) -o $(TARGET) $(CPLEX_LIBS)
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) $(CPLEX_FLAGS) $(OBJS) -o $(TARGET) $(CPLEX_LIBS)
 
-#$(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp
-#	$(CXX) $(CXXFLAGS) $(CPLEX_FLAGS) -c $< -o $@
+$(BIN_DIR)/MetodosExatos.o: $(SRC_DIR)/MetodosExatos.cpp
+	$(CXX) $(CXXFLAGS) $(CPLEX_FLAGS) -c $< -o $@ $(CPLEX_LIBS)
+
+$(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Limpeza
 clean:

@@ -4,6 +4,7 @@
 #include "Solucao.h"
 #include "Avaliador.h"
 #include "HeuristicasConstrutivas.h"
+#include "BuscasLocais.h"
 
 using std::cin;
 
@@ -63,7 +64,10 @@ int main(int argc, char** argv) {
 
     HeuristicaConstrutiva* heuristicaConstrutiva;
     Solucao sol;
+    Solucao CI;
     ParametrosExtra paramExtra;
+    BuscaLocal* buscaLocal;
+    BuscaLocalDeCI* buscaLocalDeCI;
     int opcao;
     int hc;
     while (true) {
@@ -122,6 +126,32 @@ int main(int argc, char** argv) {
             }
 
             // Busca Local
+
+            case 2: {
+                buscaLocalDeCI = new DescidaDestroyAndRepair();
+                heuristicaConstrutiva = new DecomposicaoGulosa();
+                paramExtra[0] = 10; // Guloso pelo n. de restricoes
+                sol = heuristicaConstrutiva->gerarSolucao(*inst, paramExtra);
+                CI = dynamic_cast<DecomposicaoGulosa*>(heuristicaConstrutiva)->conjuntoIndependente;
+
+                cout << "Solucao obtida INICIALMENTE: ";
+                imprimeSol(sol);
+                cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+
+                sol = buscaLocalDeCI->aprimorarSolucao(*inst, sol, CI);
+
+                cout << "Solucao obtida APOS BUSCA LOCAL DE CI: ";
+                imprimeSol(sol);
+                cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+
+                break;
+            }
 
             // Metaheuristica
             

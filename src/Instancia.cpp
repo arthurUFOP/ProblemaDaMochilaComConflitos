@@ -37,7 +37,7 @@ Instancia::Instancia() {
         
         // Inicializando com false (isso eh, sem restricoes)
         for (int i=0; i<this->nRest; i++)
-            for (int j=0; i<this->nRest; i++)
+            for (int j=0; j<this->nRest; j++)
                 this->restricoes[i][j] = 0;
 
         // Lendo as restricoes
@@ -96,10 +96,10 @@ Instancia::Instancia(string caminhoArquivo) {
         this->restricoes = new int*[this->nItens];
         for (int i=0; i<this->nItens; i++)
             this->restricoes[i] = new int[this->nItens];
-        
+
         // Inicializando com false (isso eh, sem restricoes)
         for (int i=0; i<this->nItens; i++)
-            for (int j=0; i<this->nItens; j++)
+            for (int j=0; j<this->nItens; j++)
                 this->restricoes[i][j] = 0;
 
         // Lendo as restricoes
@@ -159,10 +159,11 @@ Instancia::Instancia(int nItens, float pesoMax, vector<Item> itens) {
     this->nItens = nItens;
     this->pesoMax = pesoMax;
     this->itens = itens;
+    this->nRest = 1;
 
     // Alocando a matriz de restricoes (caso do cplex eh inutil, mas evita problemas com o destrutor)
-    this->restricoes = new int*[this->nRest];
-    for (int i=0; i<this->nRest; i++)
-        this->restricoes[i] = new int[this->nRest];
+    this->restricoes = new int*[this->nItens];
+    for (int i=0; i<this->nItens; i++)
+        this->restricoes[i] = new int[this->nItens];
 
 }

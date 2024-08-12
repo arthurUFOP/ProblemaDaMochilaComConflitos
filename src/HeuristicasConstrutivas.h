@@ -11,9 +11,12 @@
 #include "Item.h"
 #include "Avaliador.h"
 #include "MetodosExatos.h"
+#include "Comparadores.h"
 
 using std::map, std::sort, std::vector;
 typedef map<int, int> ParametrosExtra;
+
+Solucao backtrackComIteracaoMaxima(Instancia& inst, Solucao& melhorSol, float* melhorFo, Solucao& solAtual, vector<Item>& itens, int i, float pesoAtual, int* iter, int iterMax, bool* continua);
 
 // OOP - Uma classe base para heuristicas construtivas!
 // Tudo que uma heuristica construtiva faz eh gerar uma solucao a partir de uma instancia
@@ -24,6 +27,7 @@ public:
 
 class DecomposicaoGulosa : public HeuristicaConstrutiva {
 public:
+    Solucao conjuntoIndependente;
     DecomposicaoGulosa();
     ~DecomposicaoGulosa();
     
@@ -33,6 +37,7 @@ public:
 
 class DecomposicaoAleatoria : public HeuristicaConstrutiva {
 public:
+    Solucao conjuntoIndependente;
     DecomposicaoAleatoria();
     ~DecomposicaoAleatoria();
     

@@ -82,16 +82,6 @@ Solucao backtrackComIteracaoMaxima(Instancia& inst, Solucao& melhorSol, float* m
         Depois utiliza o método exato sobre o subproblema gerado. Irei testar com heuristica nesse passo tambem!
 */
 
-// Comparador entre itens (valor)
-struct sCompValor {
-  bool operator() (Item i,Item j) {return (i.valor<j.valor);}
-} CompValor;
-
-// Comparador entre itens (n. Restricoes, DESCENDENTE)
-struct sCompRest {
-  bool operator() (Item i,Item j) {return (i.nRest>j.nRest);}
-} CompRest;
-
 DecomposicaoGulosa::DecomposicaoGulosa() {}
 DecomposicaoGulosa::~DecomposicaoGulosa() {}
 
@@ -126,6 +116,10 @@ Solucao DecomposicaoGulosa::decomposicaoGulosa(Instancia& inst, ParametrosExtra 
         for (auto it=indexesRemover.rbegin(); it<indexesRemover.rend(); it++) // Remover de tras pra frente para nao baguncar os indices
             listaCandidatos.erase(listaCandidatos.begin()+(*it));
     }
+
+    for (auto i : sol)
+        this->conjuntoIndependente.push_back(i);
+
     return sol;
 }
 
@@ -215,6 +209,10 @@ Solucao DecomposicaoAleatoria::decomposicaoAleatoria(Instancia& inst) {
         for (auto it=indexesRemover.rbegin(); it<indexesRemover.rend(); it++) // Remover de tras pra frente para nao baguncar os indices
             listaCandidatos.erase(listaCandidatos.begin()+(*it));
     }
+
+    for (auto i : sol)
+        this->conjuntoIndependente.push_back(i);
+        
     return sol;
 }
 
