@@ -1,12 +1,18 @@
 #include <time.h>
 #include <stdio.h>
+#include <chrono>
 #include "Instancia.h"
 #include "Solucao.h"
 #include "Avaliador.h"
 #include "HeuristicasConstrutivas.h"
+#include "BuscasLocais.h"
 
 using std::cin;
+using std::ofstream; 
 
+#define CAMINHO_BASE "./LOGS/"
+
+// Main Com Menu Principal
 int menuPrincipal()
 {
     int op;
@@ -47,6 +53,7 @@ int menuHeuristicaConstrutiva()
 }
 
 int main(int argc, char** argv) {
+    //srand(712347);
     srand(time(NULL));
 
     // Leitura da instancia (ou informada por linha de comando, ou caminho default)
@@ -62,7 +69,10 @@ int main(int argc, char** argv) {
 
     HeuristicaConstrutiva* heuristicaConstrutiva;
     Solucao sol;
+    Solucao CI;
     ParametrosExtra paramExtra;
+    BuscaLocal* buscaLocal;
+    BuscaLocalDeCI* buscaLocalDeCI;
     int opcao;
     int hc;
     while (true) {
@@ -117,9 +127,36 @@ int main(int argc, char** argv) {
                 << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
                 << "Peso Maximo da Mochila: " << inst->pesoMax << endl
                 << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+                break;
             }
 
             // Busca Local
+
+            case 2: {
+                buscaLocalDeCI = new DescidaDestroyAndRepair();
+                heuristicaConstrutiva = new DecomposicaoGulosa();
+                paramExtra[0] = 10; // Guloso pelo n. de restricoes
+                sol = heuristicaConstrutiva->gerarSolucao(*inst, paramExtra);
+                CI = dynamic_cast<DecomposicaoGulosa*>(heuristicaConstrutiva)->conjuntoIndependente;
+
+                cout << "Solucao obtida INICIALMENTE: ";
+                imprimeSol(sol);
+                cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+
+                sol = buscaLocalDeCI->aprimorarSolucao(*inst, sol, CI);
+
+                cout << "Solucao obtida APOS BUSCA LOCAL DE CI: ";
+                imprimeSol(sol);
+                cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+
+                break;
+            }
 
             // Metaheuristica
             
@@ -131,3 +168,102 @@ int main(int argc, char** argv) {
     }
     return 0;
 }
+/*
+// Funcao de Log de Experimentos
+void logExperimento(string logCaminho, string metodoNome, string instanciaCaminho, int nItens, int nRest, float pesoMax, float duracao_ms, float fo, float pesoNaMochila, bool validade) {
+    ofstream arq(logCaminho, std::ios::app);
+    if(arq.is_open()) {
+        arq << metodoNome << "," << instanciaCaminho << "," << nItens << "," << nRest << "," << pesoMax << "," << duracao_ms << "," << fo << "," << pesoNaMochila << "," << (validade ? 1 : 0) << endl;
+    }
+    else {
+        cout << "Erro durante o LOG do experimento. Nao foi possivel abrir " << logCaminho << endl;
+        exit(1);
+    }
+
+}
+
+// Main para os experimentos com as heuristicas construtivas
+int main(int argc, char** argv) {
+    srand(time(NULL));
+
+    // Instanciando as quatro heuristicas
+    HeuristicaConstrutiva** hcs = new HeuristicaConstrutiva*[4];
+    hcs[0] = new DecomposicaoGulosa();
+    hcs[1] = new DecomposicaoAleatoria();
+    hcs[2] = new InsercaoGulosa();
+    hcs[3] = new InsercaoAleatoria();
+
+    // Vetor de nomes
+    string hcNomes[] = {"DecomposicaoGulosa", "DecomposicaoAleatoria", "InsercaoGulosa", "InsercaoAleatoria"};
+
+    for (int i=0; i<4; i++) {
+        // Determinando a heuristica em especifico
+        HeuristicaConstrutiva* hc = hcs[i];
+        string hcNome = hcNomes[i];
+        string logCaminho = CAMINHO_BASE + hcNome + ".csv";
+
+        // Caminhos das instancias
+        string instanciasCaminhos[] = { "./instancias/I1_I10/10I1", "./instancias/I1_I10/10I2", "./instancias/I1_I10/10I3", "./instancias/I1_I10/10I4",
+                            "./instancias/I1_I10/10I5", "./instancias/I1_I10/1I1", "./instancias/I1_I10/1I2", "./instancias/I1_I10/1I3", "./instancias/I1_I10/1I4",
+                            "./instancias/I1_I10/1I5", "./instancias/I1_I10/2I1", "./instancias/I1_I10/2I2", "./instancias/I1_I10/2I3", "./instancias/I1_I10/2I4",
+                            "./instancias/I1_I10/2I5", "./instancias/I1_I10/3I1", "./instancias/I1_I10/3I2", "./instancias/I1_I10/3I3", "./instancias/I1_I10/3I4",
+                            "./instancias/I1_I10/3I5", "./instancias/I1_I10/4I1", "./instancias/I1_I10/4I2", "./instancias/I1_I10/4I3", "./instancias/I1_I10/4I4",
+                            "./instancias/I1_I10/4I5", "./instancias/I1_I10/5I1", "./instancias/I1_I10/5I2", "./instancias/I1_I10/5I3", "./instancias/I1_I10/5I4",
+                            "./instancias/I1_I10/5I5", "./instancias/I1_I10/6I1", "./instancias/I1_I10/6I2", "./instancias/I1_I10/6I3", "./instancias/I1_I10/6I4",
+                            "./instancias/I1_I10/6I5", "./instancias/I1_I10/7I1", "./instancias/I1_I10/7I2", "./instancias/I1_I10/7I3", "./instancias/I1_I10/7I4",
+                            "./instancias/I1_I10/7I5", "./instancias/I1_I10/8I1", "./instancias/I1_I10/8I2", "./instancias/I1_I10/8I3", "./instancias/I1_I10/8I4",
+                            "./instancias/I1_I10/8I5", "./instancias/I1_I10/9I1", "./instancias/I1_I10/9I2", "./instancias/I1_I10/9I3", "./instancias/I1_I10/9I4",
+                            "./instancias/I1_I10/9I5", "./instancias/I11-I20/11I1.txt", "./instancias/I11-I20/11I2.txt", "./instancias/I11-I20/11I3.txt", "./instancias/I11-I20/11I4.txt", "./instancias/I11-I20/11I5.txt",
+                            "./instancias/I11-I20/12I1.txt", "./instancias/I11-I20/12I2.txt", "./instancias/I11-I20/12I3.txt", "./instancias/I11-I20/12I4.txt", "./instancias/I11-I20/12I5.txt",
+                            "./instancias/I11-I20/13I1.txt", "./instancias/I11-I20/13I2.txt", "./instancias/I11-I20/13I3.txt", "./instancias/I11-I20/13I4.txt", "./instancias/I11-I20/13I5.txt",
+                            "./instancias/I11-I20/14I1.txt", "./instancias/I11-I20/14I2.txt", "./instancias/I11-I20/14I3.txt", "./instancias/I11-I20/14I4.txt", "./instancias/I11-I20/14I5.txt",
+                            "./instancias/I11-I20/15I1.txt", "./instancias/I11-I20/15I2.txt", "./instancias/I11-I20/15I3.txt", "./instancias/I11-I20/15I4.txt", "./instancias/I11-I20/15I5.txt",
+                            "./instancias/I11-I20/16I1.txt", "./instancias/I11-I20/16I2.txt", "./instancias/I11-I20/16I3.txt", "./instancias/I11-I20/16I4.txt", "./instancias/I11-I20/16I5.txt",
+                            "./instancias/I11-I20/17I1.txt", "./instancias/I11-I20/17I2.txt", "./instancias/I11-I20/17I3.txt", "./instancias/I11-I20/17I4.txt", "./instancias/I11-I20/17I5.txt",
+                            "./instancias/I11-I20/18I1.txt", "./instancias/I11-I20/18I2.txt", "./instancias/I11-I20/18I3.txt", "./instancias/I11-I20/18I4.txt", "./instancias/I11-I20/18I5.txt",
+                            "./instancias/I11-I20/19I1.txt", "./instancias/I11-I20/19I2.txt", "./instancias/I11-I20/19I3.txt", "./instancias/I11-I20/19I4.txt", "./instancias/I11-I20/19I5.txt",
+                            "./instancias/I11-I20/20I1.txt", "./instancias/I11-I20/20I2.txt", "./instancias/I11-I20/20I3.txt", "./instancias/I11-I20/20I4.txt", "./instancias/I11-I20/20I5.txt"};
+        
+        // Execucao do primeiro grupo
+        for (auto instanciaCaminho : instanciasCaminhos) {
+
+            // Realizando o experimento
+            Instancia inst = Instancia(instanciaCaminho);
+            ParametrosExtra pExtra;
+            pExtra[0] = 1; // Ordenar por valor no Decomposicao Gulosa
+            auto inicio = std::chrono::high_resolution_clock::now();
+            Solucao sol = hc->gerarSolucao(inst, pExtra);
+            auto fim = std::chrono::high_resolution_clock::now();
+
+            // Calculando metricas a serem reportadas
+            auto duracao_ms = std::chrono::duration_cast<std::chrono::milliseconds>(fim - inicio).count();
+            float fo = avaliaFO(inst, sol);
+            bool validade = avaliaValidade(inst, sol);
+            float peso = avaliaPeso(inst, sol);
+
+            logExperimento(logCaminho, hcNome, instanciaCaminho, inst.nItens, inst.nRest, inst.pesoMax, duracao_ms, fo, peso, validade);
+            cout << "Experimento com " << hcNome << " na instancia " << instanciaCaminho << " terminado!" << endl;
+
+            if (hcNome == "DecomposicaoGulosa") {
+                pExtra[0] = 0; // Ordenar por quantidade de restricoes (decrescente)
+                inicio = std::chrono::high_resolution_clock::now();
+                sol = hc->gerarSolucao(inst, pExtra);
+                fim = std::chrono::high_resolution_clock::now();
+
+                // Calculando metricas a serem reportadas
+                duracao_ms = std::chrono::duration_cast<std::chrono::milliseconds>(fim - inicio).count();
+                fo = avaliaFO(inst, sol);
+                validade = avaliaValidade(inst, sol);
+                peso = avaliaPeso(inst, sol);
+
+                logExperimento(logCaminho+"-gulosoPorRestricoesDecrescente", hcNome, instanciaCaminho, inst.nItens, inst.nRest, inst.pesoMax, duracao_ms, fo, peso, validade);
+                cout << "Experimento com " << hcNome << " (ordenado por nRest) na instancia " << instanciaCaminho << " terminado!" << endl;
+            }
+        }
+    }
+    
+    delete[] hcs;
+
+    return 0;
+}
+*/

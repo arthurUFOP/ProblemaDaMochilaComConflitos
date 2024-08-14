@@ -4,7 +4,9 @@
 #include <iostream>
 #include <vector>
 
-using std::vector, std::cout, std::endl;
+using std::vector;
+using std::cout;
+using std::endl;
 
 typedef vector<int> Solucao;
 

@@ -8,7 +8,11 @@
 #include <vector>
 #include "Item.h"
 
-using std::vector, std::string, std::ifstream, std::cout, std::endl;
+using std::vector;
+using std::string;
+using std::ifstream; 
+using std::cout;
+using std::endl;
 
 // Irei utilizar como um struct, mas selecionei classe
 // pela comodidade do construtor e destrutor
@@ -22,6 +26,7 @@ public:
     vector<Item> itens;
     Instancia();
     Instancia(string caminhoArquivo);
+    Instancia(int nItens, float pesoMax, vector<Item> itens); // Instancia para CPLEX
     ~Instancia();
 
     void printInstancia(bool printarItens=false);

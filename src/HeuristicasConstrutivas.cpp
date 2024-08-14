@@ -82,16 +82,6 @@ Solucao backtrackComIteracaoMaxima(Instancia& inst, Solucao& melhorSol, float* m
         Depois utiliza o método exato sobre o subproblema gerado. Irei testar com heuristica nesse passo tambem!
 */
 
-// Comparador entre itens (valor)
-struct sCompValor {
-  bool operator() (Item i,Item j) {return (i.valor<j.valor);}
-} CompValor;
-
-// Comparador entre itens (n. Restricoes, DESCENDENTE)
-struct sCompRest {
-  bool operator() (Item i,Item j) {return (i.nRest>j.nRest);}
-} CompRest;
-
 DecomposicaoGulosa::DecomposicaoGulosa() {}
 DecomposicaoGulosa::~DecomposicaoGulosa() {}
 
@@ -126,6 +116,10 @@ Solucao DecomposicaoGulosa::decomposicaoGulosa(Instancia& inst, ParametrosExtra 
         for (auto it=indexesRemover.rbegin(); it<indexesRemover.rend(); it++) // Remover de tras pra frente para nao baguncar os indices
             listaCandidatos.erase(listaCandidatos.begin()+(*it));
     }
+
+    for (auto i : sol)
+        this->conjuntoIndependente.push_back(i);
+
     return sol;
 }
 
@@ -141,12 +135,36 @@ Solucao DecomposicaoGulosa::gerarSolucao(Instancia& inst, ParametrosExtra pExtra
     // Solucao do subproblema com metodo exato
     Solucao melhorSol = geraMochilaVazia(inst.nItens);
     Solucao sol = geraMochilaVazia(inst.nItens);
-    float melhorFo = 0;
+
+    // 3 Opcoes --> backtrack, backtrack com itermax e CPLEX
+
+    // Utilizando backtrack convencional
+    //float melhorFo = 0;
     //melhorSol = backtrack(inst, melhorSol, &melhorFo, sol, itensValidos, 0, 0);
 
-    int iter = 0;
-    bool continua = true;
-    melhorSol = backtrackComIteracaoMaxima(inst, melhorSol, &melhorFo, sol, itensValidos, 0, 0, &iter, 10000, &continua);
+    // Utilizando backtrack com iterMax
+    // float melhorFo = 0;
+    //int iter = 0;
+    //bool continua = true;
+    //melhorSol = backtrackComIteracaoMaxima(inst, melhorSol, &melhorFo, sol, itensValidos, 0, 0, &iter, 10000, &continua);
+
+    // Utilizando CPLEX
+    CPLEXMochilaBasico metodoCPLEX = CPLEXMochilaBasico(inst.nItens, 0, false);
+
+    // N de itens no subproblema
+    int nItensSubproblema = 0;
+    for (auto v : solReferencia)
+        nItensSubproblema += v;
+    
+    // Itens do subproblema
+    vector<Item> itensSubproblema;
+    for (int i=0; i<solReferencia.size(); i++)
+        if (solReferencia.at(i))
+            itensSubproblema.push_back(inst.itens.at(i));
+
+    Instancia instSubproblema = Instancia(nItensSubproblema, inst.pesoMax, itensSubproblema); // Construtor para subproblema CPLEX
+
+    melhorSol = metodoCPLEX.gerarSolucaoOtima(instSubproblema);
 
     return melhorSol;
 }
@@ -191,6 +209,10 @@ Solucao DecomposicaoAleatoria::decomposicaoAleatoria(Instancia& inst) {
         for (auto it=indexesRemover.rbegin(); it<indexesRemover.rend(); it++) // Remover de tras pra frente para nao baguncar os indices
             listaCandidatos.erase(listaCandidatos.begin()+(*it));
     }
+
+    for (auto i : sol)
+        this->conjuntoIndependente.push_back(i);
+        
     return sol;
 }
 
@@ -206,12 +228,36 @@ Solucao DecomposicaoAleatoria::gerarSolucao(Instancia& inst, ParametrosExtra pEx
     // Solucao do subproblema com metodo exato
     Solucao melhorSol = geraMochilaVazia(inst.nItens);
     Solucao sol = geraMochilaVazia(inst.nItens);
-    float melhorFo = 0;
+
+    // 3 Opcoes --> backtrack, backtrack com iterMax e CPLEX
+
+    // Utilizando backtrack convencional
+    //float melhorFo = 0;
     //melhorSol = backtrack(inst, melhorSol, &melhorFo, sol, itensValidos, 0, 0);
 
-    int iter = 0;
-    bool continua = true;
-    melhorSol = backtrackComIteracaoMaxima(inst, melhorSol, &melhorFo, sol, itensValidos, 0, 0, &iter, 10000, &continua);
+    // Utilizando backtrack com iterMax
+    //float melhorFo = 0;
+    //int iter = 0;
+    //bool continua = true;
+    //melhorSol = backtrackComIteracaoMaxima(inst, melhorSol, &melhorFo, sol, itensValidos, 0, 0, &iter, 10000, &continua);
+
+    // Utilizando CPLEX
+    CPLEXMochilaBasico metodoCPLEX = CPLEXMochilaBasico(inst.nItens, 0, false);
+
+    // N de itens no subproblema
+    int nItensSubproblema = 0;
+    for (auto v : solReferencia)
+        nItensSubproblema += v;
+    
+    // Itens do subproblema
+    vector<Item> itensSubproblema;
+    for (int i=0; i<solReferencia.size(); i++)
+        if (solReferencia.at(i))
+            itensSubproblema.push_back(inst.itens.at(i));
+
+    Instancia instSubproblema = Instancia(nItensSubproblema, inst.pesoMax, itensSubproblema); // Construtor para subproblema CPLEX
+
+    melhorSol = metodoCPLEX.gerarSolucaoOtima(instSubproblema);
 
     return melhorSol;
 }
