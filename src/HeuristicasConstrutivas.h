@@ -13,7 +13,9 @@
 #include "MetodosExatos.h"
 #include "Comparadores.h"
 
-using std::map, std::sort, std::vector;
+using std::map;
+using std::sort;
+using std::vector;
 typedef map<int, int> ParametrosExtra;
 
 Solucao backtrackComIteracaoMaxima(Instancia& inst, Solucao& melhorSol, float* melhorFo, Solucao& solAtual, vector<Item>& itens, int i, float pesoAtual, int* iter, int iterMax, bool* continua);
