@@ -1,4 +1,134 @@
 #include "BuscasLocais.h"
+
+float inversaoBit(Instancia& inst, Solucao& sol, int i) {
+    // Se o bit eh 1, irei inverter para 0 e, portanto, subtrair o valor
+    // Se o bit eh 0, irei inverter para 1 e, portanto, somar o valor
+    if (sol.at(i)==1) {
+        sol.at(i) = 0;
+        return -inst.itens.at(i).valor;
+    }
+    else {
+        sol.at(i) = 1;
+        return inst.itens.at(i).valor;
+    }
+}
+
+DescidaInversaoDe2BitsFI::DescidaInversaoDe2BitsFI() {}
+
+DescidaInversaoDe2BitsFI::~DescidaInversaoDe2BitsFI() {}
+
+Solucao DescidaInversaoDe2BitsFI::aprimorarSolucao(Instancia& inst, Solucao& sol) {
+    Solucao melhorSol = sol;
+    float melhorFO = avaliaFO(inst, sol);
+
+    Solucao solAtual = melhorSol;
+    float atualFO = melhorFO;
+    float antigaFO;
+    
+    bool melhorou;
+    
+    do {
+        melhorou = false;
+        for (int i=0; i<inst.nItens; i++) {
+            for (int j=i+1; j<inst.nItens; j++) {
+
+                // Calcula o delta de valores (valor, peso)
+                float delta1 = inversaoBit(inst, solAtual, i);
+                float delta2 = inversaoBit(inst, solAtual, j);
+
+                // Calcula nova FO
+                antigaFO = atualFO;
+                atualFO = atualFO + delta1 + delta2 + (avaliaValidade(inst, solAtual) ? 0 : -inst.somaDosValores);
+
+                // Se melhorou, reinicia-se a busca com a nova solução
+                if (atualFO > melhorFO) {
+                    cout << "Melhora encontrada na DescidaInversaoDe2BitsFI. FO: " << melhorFO << " -> " << atualFO << endl;
+                    melhorFO = atualFO;
+                    melhorSol = solAtual;
+                    melhorou = true;
+                    break;
+                }
+                else {
+                    // Desfaz mudança
+                    inversaoBit(inst, solAtual, i);
+                    inversaoBit(inst, solAtual, j);
+                    atualFO = antigaFO;
+                }
+            }
+            if (melhorou)
+                break;
+        }
+    } while (melhorou);
+
+    return melhorSol;
+}
+
+DescidaInversaoDe2aNBitsFI::DescidaInversaoDe2aNBitsFI() {
+    this->nBits = 10;
+    this->iterMax = 200000;
+}
+
+DescidaInversaoDe2aNBitsFI::DescidaInversaoDe2aNBitsFI(int n, int iterMax) {
+    this->nBits = n;
+    this->iterMax = iterMax;
+}
+
+DescidaInversaoDe2aNBitsFI::~DescidaInversaoDe2aNBitsFI() {}
+
+Solucao DescidaInversaoDe2aNBitsFI::aprimorarSolucao(Instancia& inst, Solucao& sol) {
+    Solucao melhorSol = sol;
+    float melhorFO = avaliaFO(inst, sol);
+
+    Solucao solAtual = melhorSol;
+    float atualFO = melhorFO;
+    float antigaFO;
+    
+    int iter;
+    bool melhorou;
+    
+    do {
+        iter = 0;
+        melhorou = false;
+        while (iter < iterMax) {
+            iter++;
+
+            int nIteracao = 2+rand()%(this->nBits-1); // Valor de n nesta iteracao
+            vector<pair<int, float>> delta(nIteracao); // Formato: [(posicao da inversao, deltaDaInversao)]
+
+            // Realiza as i \in [2, n] inversoes
+            for (int z=0; z<nIteracao; z++) {
+                int i = rand() % inst.nItens;
+                delta.at(z).first = i;
+                delta.at(z).second = inversaoBit(inst, solAtual, i);
+            }
+
+            // Calcula nova FO
+            antigaFO = atualFO;
+            for (int i=0; i<delta.size(); i++) 
+                atualFO+=delta.at(i).second;
+            atualFO += avaliaValidade(inst, solAtual) ? 0 : -inst.somaDosValores;
+
+            // Se melhorou, reinicia-se a busca com a nova solução
+            if (atualFO > melhorFO) {
+                cout << "Melhora encontrada na DescidaInversaoDe2aNBitsFI. FO: " << melhorFO << " -> " << atualFO << endl;
+                melhorFO = atualFO;
+                melhorSol = solAtual;
+                melhorou = true;
+                break;
+            }
+            // Se não melhorou, Desfaz mudança
+            else {
+                for (int z=0; z<nIteracao; z++)
+                    inversaoBit(inst, solAtual, delta.at(z).first);
+                atualFO = antigaFO;
+            }
+        }
+    } while (melhorou);
+
+    return melhorSol;
+}
+
+
 /*
 pair<Solucao, float> movimentoInsercaoAleatoria(Instancia& inst, Solucao& solBase, float fo) {
     Solucao sol = solBase;

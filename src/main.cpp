@@ -48,8 +48,23 @@ int menuHeuristicaConstrutiva()
     } while ( (hc < 1) || (hc > 4) );
 
     return hc;
-    
-    
+}
+
+int menuBuscaLocal()
+{
+    int bl;
+    printf("---- Buscas Locais ---\n");
+    printf("Selecione uma opção:\n");
+    printf("1 - Destroy&Repair\n");
+    printf("2 - Descida Inversao de 2 bits FI.\n");
+    printf("3 - Descida Inversao de 2 a N bits FI.\n");
+    do
+    {
+        printf("Digite a opção escolhida: ");
+        cin >> bl; 
+    } while ( (bl < 1) || (bl > 3) );
+
+    return bl;
 }
 
 int main(int argc, char** argv) {
@@ -74,7 +89,7 @@ int main(int argc, char** argv) {
     BuscaLocal* buscaLocal;
     BuscaLocalDeCI* buscaLocalDeCI;
     int opcao;
-    int hc;
+    int hc, bl;
     while (true) {
         opcao = menuPrincipal();
         if (opcao == 0)
@@ -131,29 +146,82 @@ int main(int argc, char** argv) {
             }
 
             // Busca Local
-
             case 2: {
-                buscaLocalDeCI = new DescidaDestroyAndRepair();
-                heuristicaConstrutiva = new DecomposicaoGulosa();
-                paramExtra[0] = 10; // Guloso pelo n. de restricoes
-                sol = heuristicaConstrutiva->gerarSolucao(*inst, paramExtra);
-                CI = dynamic_cast<DecomposicaoGulosa*>(heuristicaConstrutiva)->conjuntoIndependente;
+                bl = menuBuscaLocal();
+                switch (bl)
+                {
+                    case 1: {
+                        buscaLocalDeCI = new DescidaDestroyAndRepair();
+                        heuristicaConstrutiva = new DecomposicaoGulosa();
+                        paramExtra[0] = 10; // Guloso pelo n. de restricoes
+                        sol = heuristicaConstrutiva->gerarSolucao(*inst, paramExtra);
+                        CI = dynamic_cast<DecomposicaoGulosa*>(heuristicaConstrutiva)->conjuntoIndependente;
 
-                cout << "Solucao obtida INICIALMENTE: ";
-                imprimeSol(sol);
-                cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
-                << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
-                << "Peso Maximo da Mochila: " << inst->pesoMax << endl
-                << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+                        cout << "Solucao obtida INICIALMENTE: ";
+                        imprimeSol(sol);
+                        cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                        << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                        << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                        << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
 
-                sol = buscaLocalDeCI->aprimorarSolucao(*inst, sol, CI);
+                        sol = buscaLocalDeCI->aprimorarSolucao(*inst, sol, CI);
 
-                cout << "Solucao obtida APOS BUSCA LOCAL DE CI: ";
-                imprimeSol(sol);
-                cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
-                << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
-                << "Peso Maximo da Mochila: " << inst->pesoMax << endl
-                << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+                        cout << "Solucao obtida APOS BUSCA LOCAL DE CI: ";
+                        imprimeSol(sol);
+                        cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                        << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                        << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                        << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+                        break;
+                    }
+
+                    case 2: {
+                        buscaLocal = new DescidaInversaoDe2BitsFI();
+                        heuristicaConstrutiva = new DecomposicaoGulosa();
+                        paramExtra[0] = 10; // Guloso pelo n. de restricoes
+                        sol = heuristicaConstrutiva->gerarSolucao(*inst, paramExtra);
+                        cout << "Solucao obtida INICIALMENTE: ";
+                        imprimeSol(sol);
+                        cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                        << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                        << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                        << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+
+                        sol = buscaLocal->aprimorarSolucao(*inst, sol);
+                        cout << "Solucao obtida APOS BUSCA LOCAL DE CI: ";
+                        imprimeSol(sol);
+                        cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                        << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                        << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                        << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+                        break;
+                    }
+
+                    case 3: {
+                        buscaLocal = new DescidaInversaoDe2aNBitsFI();
+                        heuristicaConstrutiva = new DecomposicaoGulosa();
+                        paramExtra[0] = 10; // Guloso pelo n. de restricoes
+                        sol = heuristicaConstrutiva->gerarSolucao(*inst, paramExtra);
+                        cout << "Solucao obtida INICIALMENTE: ";
+                        imprimeSol(sol);
+                        cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                        << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                        << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                        << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+
+                        sol = buscaLocal->aprimorarSolucao(*inst, sol);
+                        cout << "Solucao obtida APOS BUSCA LOCAL DE CI: ";
+                        imprimeSol(sol);
+                        cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                        << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                        << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                        << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+                        break;
+                    }
+
+                    default:
+                        break;
+                }
 
                 break;
             }
