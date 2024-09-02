@@ -63,6 +63,53 @@ Solucao DescidaInversaoDe2BitsFI::aprimorarSolucao(Instancia& inst, Solucao& sol
     return melhorSol;
 }
 
+DescidaInversaoDe2BitsBI::DescidaInversaoDe2BitsBI() {}
+
+DescidaInversaoDe2BitsBI::~DescidaInversaoDe2BitsBI() {}
+
+Solucao DescidaInversaoDe2BitsBI::aprimorarSolucao(Instancia& inst, Solucao& sol) {
+    Solucao melhorSol = sol;
+    float melhorFO = avaliaFO(inst, sol);
+
+    Solucao solAtual = melhorSol;
+    float atualFO = melhorFO;
+    float antigaFO;
+    
+    bool melhorou;
+    
+    do {
+        melhorou = false;
+        for (int i=0; i<inst.nItens; i++) {
+            for (int j=i+1; j<inst.nItens; j++) {
+
+                // Calcula o delta de valores (valor, peso)
+                float delta1 = inversaoBit(inst, solAtual, i);
+                float delta2 = inversaoBit(inst, solAtual, j);
+
+                // Calcula nova FO
+                antigaFO = atualFO;
+                atualFO = atualFO + delta1 + delta2 + (avaliaValidade(inst, solAtual) ? 0 : -inst.somaDosValores);
+
+                // Se melhorou, reinicia-se a busca com a nova solução
+                if (atualFO > melhorFO) {
+                    cout << "Melhora encontrada na DescidaInversaoDe2BitsBI. FO: " << melhorFO << " -> " << atualFO << endl;
+                    melhorFO = atualFO;
+                    melhorSol = solAtual;
+                    melhorou = true;
+                }
+                else {
+                    // Desfaz mudança
+                    inversaoBit(inst, solAtual, i);
+                    inversaoBit(inst, solAtual, j);
+                    atualFO = antigaFO;
+                }
+            }
+        }
+    } while (melhorou);
+
+    return melhorSol;
+}
+
 DescidaInversaoDe2aNBitsFI::DescidaInversaoDe2aNBitsFI() {
     this->nBits = 10;
     this->iterMax = 200000;

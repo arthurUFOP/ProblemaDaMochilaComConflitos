@@ -58,11 +58,12 @@ int menuBuscaLocal()
     printf("1 - Destroy&Repair\n");
     printf("2 - Descida Inversao de 2 bits FI.\n");
     printf("3 - Descida Inversao de 2 a N bits FI.\n");
+    printf("4 - Descida Inversao de 2 bits BI.\n");
     do
     {
         printf("Digite a opção escolhida: ");
         cin >> bl; 
-    } while ( (bl < 1) || (bl > 3) );
+    } while ( (bl < 1) || (bl > 4) );
 
     return bl;
 }
@@ -199,6 +200,28 @@ int main(int argc, char** argv) {
 
                     case 3: {
                         buscaLocal = new DescidaInversaoDe2aNBitsFI();
+                        heuristicaConstrutiva = new DecomposicaoGulosa();
+                        paramExtra[0] = 10; // Guloso pelo n. de restricoes
+                        sol = heuristicaConstrutiva->gerarSolucao(*inst, paramExtra);
+                        cout << "Solucao obtida INICIALMENTE: ";
+                        imprimeSol(sol);
+                        cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                        << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                        << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                        << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+
+                        sol = buscaLocal->aprimorarSolucao(*inst, sol);
+                        cout << "Solucao obtida APOS BUSCA LOCAL DE CI: ";
+                        imprimeSol(sol);
+                        cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                        << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                        << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                        << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+                        break;
+                    }
+
+                    case 4: {
+                        buscaLocal = new DescidaInversaoDe2BitsBI();
                         heuristicaConstrutiva = new DecomposicaoGulosa();
                         paramExtra[0] = 10; // Guloso pelo n. de restricoes
                         sol = heuristicaConstrutiva->gerarSolucao(*inst, paramExtra);

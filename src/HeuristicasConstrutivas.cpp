@@ -87,8 +87,8 @@ DecomposicaoGulosa::~DecomposicaoGulosa() {}
 
 // Algoritmo 1 do paper
 // OBS.: MODULARIZAR DEPOIS PARA SER GULOSO COM CRITERIOS DIFERENTES
-// pExtra[0] == 0 -> valor
-// Qualquer outra coisa -> n. de restricoes
+// pExtra[0] != 0 -> valor
+// pExtra[0] == 0 -> n. de restricoes
 Solucao DecomposicaoGulosa::decomposicaoGulosa(Instancia& inst, ParametrosExtra pExtra) { 
     Solucao sol = geraMochilaVazia(inst.nItens);
 

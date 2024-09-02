@@ -38,6 +38,15 @@ public:
 
 };
 
+class DescidaInversaoDe2BitsBI : public BuscaLocal
+{
+public:
+    DescidaInversaoDe2BitsBI();
+    ~DescidaInversaoDe2BitsBI();
+    Solucao aprimorarSolucao(Instancia& inst, Solucao& sol);
+
+};
+
 class DescidaInversaoDe2aNBitsFI : public BuscaLocal
 {
 public:
