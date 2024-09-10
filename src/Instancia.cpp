@@ -23,8 +23,12 @@ Instancia::Instancia() {
         }
         
         // Lendo os valores
-        for (int i=0; i<this->nItens; i++)
+        float somaTotal = 0;
+        for (int i=0; i<this->nItens; i++) {
             arq >> this->itens.at(i).valor;
+            somaTotal += this->itens.at(i).valor;
+        }
+        this->somaDosValores = somaTotal;
         
         // Lendo os pesos
         for (int i=0; i<this->nItens; i++)
@@ -85,8 +89,12 @@ Instancia::Instancia(string caminhoArquivo) {
         }
         
         // Lendo os valores
-        for (int i=0; i<this->nItens; i++)
+        float somaTotal = 0;
+        for (int i=0; i<this->nItens; i++) {
             arq >> this->itens.at(i).valor;
+            somaTotal += this->itens.at(i).valor;
+        }
+        this->somaDosValores = somaTotal;
         
         // Lendo os pesos
         for (int i=0; i<this->nItens; i++)
@@ -160,6 +168,7 @@ Instancia::Instancia(int nItens, float pesoMax, vector<Item> itens) {
     this->pesoMax = pesoMax;
     this->itens = itens;
     this->nRest = 1;
+    this->somaDosValores = 0;
 
     // Alocando a matriz de restricoes (caso do cplex eh inutil, mas evita problemas com o destrutor)
     this->restricoes = new int*[this->nItens];

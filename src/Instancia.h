@@ -24,6 +24,7 @@ public:
     float pesoMax;
     int** restricoes;
     vector<Item> itens;
+    float somaDosValores;
     Instancia();
     Instancia(string caminhoArquivo);
     Instancia(int nItens, float pesoMax, vector<Item> itens); // Instancia para CPLEX

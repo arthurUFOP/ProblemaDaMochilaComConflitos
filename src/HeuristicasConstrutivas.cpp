@@ -87,8 +87,8 @@ DecomposicaoGulosa::~DecomposicaoGulosa() {}
 
 // Algoritmo 1 do paper
 // OBS.: MODULARIZAR DEPOIS PARA SER GULOSO COM CRITERIOS DIFERENTES
-// pExtra[0] == 0 -> valor
-// Qualquer outra coisa -> n. de restricoes
+// pExtra[0] != 0 -> valor
+// pExtra[0] == 0 -> n. de restricoes
 Solucao DecomposicaoGulosa::decomposicaoGulosa(Instancia& inst, ParametrosExtra pExtra) { 
     Solucao sol = geraMochilaVazia(inst.nItens);
 
@@ -117,6 +117,7 @@ Solucao DecomposicaoGulosa::decomposicaoGulosa(Instancia& inst, ParametrosExtra 
             listaCandidatos.erase(listaCandidatos.begin()+(*it));
     }
 
+    this->conjuntoIndependente.clear(); // Garantindo que o CI esteja vazio 
     for (auto i : sol)
         this->conjuntoIndependente.push_back(i);
 
@@ -210,6 +211,7 @@ Solucao DecomposicaoAleatoria::decomposicaoAleatoria(Instancia& inst) {
             listaCandidatos.erase(listaCandidatos.begin()+(*it));
     }
 
+    this->conjuntoIndependente.clear(); // Garantindo que o CI esteja vazio 
     for (auto i : sol)
         this->conjuntoIndependente.push_back(i);
         
