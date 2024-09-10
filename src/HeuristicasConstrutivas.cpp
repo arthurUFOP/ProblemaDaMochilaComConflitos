@@ -117,6 +117,7 @@ Solucao DecomposicaoGulosa::decomposicaoGulosa(Instancia& inst, ParametrosExtra 
             listaCandidatos.erase(listaCandidatos.begin()+(*it));
     }
 
+    this->conjuntoIndependente.clear(); // Garantindo que o CI esteja vazio 
     for (auto i : sol)
         this->conjuntoIndependente.push_back(i);
 
@@ -210,6 +211,7 @@ Solucao DecomposicaoAleatoria::decomposicaoAleatoria(Instancia& inst) {
             listaCandidatos.erase(listaCandidatos.begin()+(*it));
     }
 
+    this->conjuntoIndependente.clear(); // Garantindo que o CI esteja vazio 
     for (auto i : sol)
         this->conjuntoIndependente.push_back(i);
         
