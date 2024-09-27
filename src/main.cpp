@@ -6,6 +6,9 @@
 #include "Avaliador.h"
 #include "HeuristicasConstrutivas.h"
 #include "BuscasLocais.h"
+#include "Metaheuristica.h"
+#include "Grasp.h"
+#include "SimulatedAnnealing.h"
 
 using std::cin;
 using std::ofstream; 
@@ -68,6 +71,22 @@ int menuBuscaLocal()
     return bl;
 }
 
+int menuMetaheuristicas()
+{
+    int bl;
+    printf("---- Metaheuristicas ---\n");
+    printf("Selecione uma opção:\n");
+    printf("1 - GRASP\n");
+    printf("2 - Simulated Annealing\n");
+    do
+    {
+        printf("Digite a opção escolhida: ");
+        cin >> bl; 
+    } while ( (bl < 1) || (bl > 2) );
+
+    return bl;
+}
+
 int main(int argc, char** argv) {
     //srand(712347);
     srand(time(NULL));
@@ -89,6 +108,9 @@ int main(int argc, char** argv) {
     ParametrosExtra paramExtra;
     BuscaLocal* buscaLocal;
     BuscaLocalDeCI* buscaLocalDeCI;
+    Metaheuristica* metaHeuristica;
+    
+
     int opcao;
     int hc, bl;
     while (true) {
@@ -250,9 +272,32 @@ int main(int argc, char** argv) {
             }
 
             // Metaheuristica
+            case 3: {
+                bl = menuMetaheuristicas();
+                switch (bl)
+                {
+                case 1:
+                    metaHeuristica = new Grasp();
+                    sol = metaHeuristica->gerarSolucao(*inst);
+                    break;
+                
+                case 2:
+                    metaHeuristica = new SimulatedAnnealing();
+                    sol = metaHeuristica->gerarSolucao(*inst);
+                
+                default:
+                    break;
+                }
+
+                cout << "Solucao obtida: ";
+                imprimeSol(sol);
+                cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+            }
             
             default: {
-                cout << "Opcao ainda nao implementada!" << endl;
                 break;
             }
         }

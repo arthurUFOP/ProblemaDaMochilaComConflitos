@@ -240,9 +240,9 @@ pair<Solucao, float> movimentoInsercaoAleatoria(Instancia& inst, Solucao& solBas
 
 DescidaDestroyAndRepair::DescidaDestroyAndRepair() {
     this->maxIter = 200;
-    this->percBase = 0.8;
+    this->percBase = 0.2;
     this->percDestruido = this->percBase;
-    this->alpha = 0.1;
+    this->alpha = 0.3;
 }
 
 DescidaDestroyAndRepair::DescidaDestroyAndRepair(int maxIter, float percBase, float alpha) {
@@ -441,7 +441,7 @@ Solucao DescidaDestroyAndRepair::aprimorarSolucao(Instancia& inst, Solucao& sol,
         //foAtual = avaliaFO(inst, solAtual);
 
         if (foAtual > melhorFo) {
-            cout << "Melhora DestroyAndRepair! Fo: " << melhorFo << " --> " << foAtual << endl;
+            //cout << "Melhora DestroyAndRepair! Fo: " << melhorFo << " --> " << foAtual << endl;
             melhorFo = foAtual;
             melhorSol = solAtual;
             iter = 0;
