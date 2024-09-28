@@ -9,6 +9,7 @@
 #include "Metaheuristica.h"
 #include "Grasp.h"
 #include "SimulatedAnnealing.h"
+#include "ILS.h"
 
 using std::cin;
 using std::ofstream; 
@@ -78,11 +79,12 @@ int menuMetaheuristicas()
     printf("Selecione uma opção:\n");
     printf("1 - GRASP\n");
     printf("2 - Simulated Annealing\n");
+    printf("3 - Smart ILS\n");
     do
     {
         printf("Digite a opção escolhida: ");
         cin >> bl; 
-    } while ( (bl < 1) || (bl > 2) );
+    } while ( (bl < 1) || (bl > 3) );
 
     return bl;
 }
@@ -283,6 +285,10 @@ int main(int argc, char** argv) {
                 
                 case 2:
                     metaHeuristica = new SimulatedAnnealing();
+                    sol = metaHeuristica->gerarSolucao(*inst);
+                
+                case 3:
+                    metaHeuristica = new ILS();
                     sol = metaHeuristica->gerarSolucao(*inst);
                 
                 default:

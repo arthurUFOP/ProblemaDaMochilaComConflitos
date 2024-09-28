@@ -83,6 +83,8 @@ public:
     ~DescidaDestroyAndRepair();
 
     Solucao aprimorarSolucao(Instancia& inst, Solucao& sol, Solucao& CI);
+
+    Solucao resultadoCI;
 };
 
 

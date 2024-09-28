@@ -12,9 +12,7 @@ Grasp::Grasp(float alpha, int graspMax) {
     this->bl = new DescidaDestroyAndRepair();
 }
 
-Grasp::~Grasp() {
-    delete this->bl;
-}
+Grasp::~Grasp() {}
 
 // Retorna a solucao e seu CI
 pair<Solucao, Solucao> Grasp::construcao(Instancia& inst) {
@@ -98,6 +96,7 @@ Solucao Grasp::gerarSolucao(Instancia& inst) {
             cout << "Melhoria Encontrada! " << foMax << " --> " << fo << endl;
             melhorSol = sol;
             foMax = fo;
+            i=0;
         }
     }
 
