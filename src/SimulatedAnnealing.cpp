@@ -2,8 +2,8 @@
 
 SimulatedAnnealing::SimulatedAnnealing() {
     this->saMax = 100000;
-    this->t0 = 100;
-    this->alpha = 0.6;
+    this->t0 = 50;
+    this->alpha = 0.9;
 }
 
 SimulatedAnnealing::SimulatedAnnealing(int saMax, float t0, float alpha) {
@@ -50,7 +50,7 @@ Solucao SimulatedAnnealing::gerarSolucao(Instancia& inst) {
 
     float temp = this->t0;
 
-    while (temp > 0.0001) {
+    while (temp > 1) {
         for (int i=0; i<this->saMax; i++) {
             Solucao solVizinho = this->geraVizinho(solAtual);
 
@@ -63,7 +63,7 @@ Solucao SimulatedAnnealing::gerarSolucao(Instancia& inst) {
                     solAtual = solVizinho;
                     foAtual = foVizinho;
                     if (foAtual > foMelhor) {
-                        cout << "Melhora SA encontrada em Temp = " << temp << ". " << foMelhor << " --> " << foAtual << endl;
+                        //cout << "Melhora SA encontrada em Temp = " << temp << ". " << foMelhor << " --> " << foAtual << endl;
 
                         foMelhor = foAtual;
                         melhorSol = solAtual;

@@ -82,7 +82,7 @@ Solucao Grasp::gerarSolucao(Instancia& inst) {
     float fo;
 
     for (int i=0; i<this->graspMax; i++) {
-        cout << "Iteracao GRASP = " << i+1 << endl;
+        //cout << "Iteracao GRASP = " << i+1 << endl;
 
         // Construcao + BuscaLocal
         auto data = this->construcao(inst);
@@ -93,10 +93,10 @@ Solucao Grasp::gerarSolucao(Instancia& inst) {
 
         // Encontrou melhora?
         if (fo > foMax) {
-            cout << "Melhoria Encontrada! " << foMax << " --> " << fo << endl;
+            //cout << "Melhoria GRASP Encontrada! " << foMax << " --> " << fo << endl;
             melhorSol = sol;
             foMax = fo;
-            i=0;
+            i=-1; // No fim do laço será executado i++
         }
     }
 

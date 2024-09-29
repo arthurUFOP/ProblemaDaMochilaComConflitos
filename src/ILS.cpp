@@ -1,7 +1,7 @@
 #include "ILS.h"
 
 ILS::ILS() {
-    this->ilsMax = 5000;
+    this->ilsMax = 6000;
     this->vezesMax = 1000;
 }
 
@@ -59,7 +59,7 @@ Solucao ILS::gerarSolucao(Instancia& inst) {
         atualFo = avaliaFO(inst, sol);
 
         if (atualFo > melhorFo) {
-            cout << "Melhoria ILS no nivel " << nivel << ": " << melhorFo << " --> " << atualFo << endl;
+            //cout << "Melhoria ILS no nivel " << nivel << ": " << melhorFo << " --> " << atualFo << endl;
             melhorSol = sol;
             melhorFo = atualFo;
             melhorIter = iter;
