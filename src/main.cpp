@@ -6,12 +6,17 @@
 #include "Avaliador.h"
 #include "HeuristicasConstrutivas.h"
 #include "BuscasLocais.h"
+#include "Metaheuristica.h"
+#include "Grasp.h"
+#include "SimulatedAnnealing.h"
+#include "ILS.h"
 
 using std::cin;
 using std::ofstream; 
 
 #define CAMINHO_BASE "./LOGS/"
 
+/*
 // Main Com Menu Principal
 int menuPrincipal()
 {
@@ -68,6 +73,23 @@ int menuBuscaLocal()
     return bl;
 }
 
+int menuMetaheuristicas()
+{
+    int bl;
+    printf("---- Metaheuristicas ---\n");
+    printf("Selecione uma opção:\n");
+    printf("1 - GRASP\n");
+    printf("2 - Simulated Annealing\n");
+    printf("3 - Smart ILS\n");
+    do
+    {
+        printf("Digite a opção escolhida: ");
+        cin >> bl; 
+    } while ( (bl < 1) || (bl > 3) );
+
+    return bl;
+}
+
 int main(int argc, char** argv) {
     //srand(712347);
     srand(time(NULL));
@@ -89,6 +111,9 @@ int main(int argc, char** argv) {
     ParametrosExtra paramExtra;
     BuscaLocal* buscaLocal;
     BuscaLocalDeCI* buscaLocalDeCI;
+    Metaheuristica* metaHeuristica;
+    
+
     int opcao;
     int hc, bl;
     while (true) {
@@ -250,16 +275,43 @@ int main(int argc, char** argv) {
             }
 
             // Metaheuristica
+            case 3: {
+                bl = menuMetaheuristicas();
+                switch (bl)
+                {
+                case 1:
+                    metaHeuristica = new Grasp();
+                    sol = metaHeuristica->gerarSolucao(*inst);
+                    break;
+                
+                case 2:
+                    metaHeuristica = new SimulatedAnnealing();
+                    sol = metaHeuristica->gerarSolucao(*inst);
+                    break;
+                case 3:
+                    metaHeuristica = new ILS();
+                    sol = metaHeuristica->gerarSolucao(*inst);
+                    break;
+                default:
+                    break;
+                }
+
+                cout << "Solucao obtida: ";
+                imprimeSol(sol);
+                cout << endl << "FO: " << avaliaFO(*inst, sol) << endl 
+                << "Peso da Solucao: " << avaliaPeso(*inst, sol) << endl
+                << "Peso Maximo da Mochila: " << inst->pesoMax << endl
+                << "Solucao Valida: " << avaliaValidade(*inst, sol) << endl;
+            }
             
             default: {
-                cout << "Opcao ainda nao implementada!" << endl;
                 break;
             }
         }
     }
     return 0;
 }
-
+*/
 
 // Funcao de Log de Experimentos
 void logExperimento(string logCaminho, string metodoNome, string instanciaCaminho, int nItens, int nRest, float pesoMax, float duracao_ms, float fo, float pesoNaMochila, bool validade) {
@@ -473,3 +525,69 @@ int main(int argc, char** argv) {
     return 0;
 }
 */
+
+// Main para os experimentos com as heuristicas construtivas
+int main(int argc, char** argv) {
+    srand(time(NULL));
+
+    // Instanciando as quatro heuristicas
+    Metaheuristica** mts = new Metaheuristica*[3];
+    mts[0] = new Grasp();
+    mts[1] = new SimulatedAnnealing();
+    mts[2] = new ILS();
+
+    // Vetor de nomes
+    string mtNomes[] = {"GRASP", "SimulatedAnnealing", "ILS"};
+
+    for (int i=0; i<4; i++) {
+        // Determinando a heuristica em especifico
+        Metaheuristica* mt = mts[i];
+        string mtNome = mtNomes[i];
+        string logCaminho = CAMINHO_BASE + mtNome + ".csv";
+
+        // Caminhos das instancias
+        string instanciasCaminhos[] = { "./instancias/I1_I10/10I1", "./instancias/I1_I10/10I2", "./instancias/I1_I10/10I3", "./instancias/I1_I10/10I4",
+                            "./instancias/I1_I10/10I5", "./instancias/I1_I10/1I1", "./instancias/I1_I10/1I2", "./instancias/I1_I10/1I3", "./instancias/I1_I10/1I4",
+                            "./instancias/I1_I10/1I5", "./instancias/I1_I10/2I1", "./instancias/I1_I10/2I2", "./instancias/I1_I10/2I3", "./instancias/I1_I10/2I4",
+                            "./instancias/I1_I10/2I5", "./instancias/I1_I10/3I1", "./instancias/I1_I10/3I2", "./instancias/I1_I10/3I3", "./instancias/I1_I10/3I4",
+                            "./instancias/I1_I10/3I5", "./instancias/I1_I10/4I1", "./instancias/I1_I10/4I2", "./instancias/I1_I10/4I3", "./instancias/I1_I10/4I4",
+                            "./instancias/I1_I10/4I5", "./instancias/I1_I10/5I1", "./instancias/I1_I10/5I2", "./instancias/I1_I10/5I3", "./instancias/I1_I10/5I4",
+                            "./instancias/I1_I10/5I5", "./instancias/I1_I10/6I1", "./instancias/I1_I10/6I2", "./instancias/I1_I10/6I3", "./instancias/I1_I10/6I4",
+                            "./instancias/I1_I10/6I5", "./instancias/I1_I10/7I1", "./instancias/I1_I10/7I2", "./instancias/I1_I10/7I3", "./instancias/I1_I10/7I4",
+                            "./instancias/I1_I10/7I5", "./instancias/I1_I10/8I1", "./instancias/I1_I10/8I2", "./instancias/I1_I10/8I3", "./instancias/I1_I10/8I4",
+                            "./instancias/I1_I10/8I5", "./instancias/I1_I10/9I1", "./instancias/I1_I10/9I2", "./instancias/I1_I10/9I3", "./instancias/I1_I10/9I4",
+                            "./instancias/I1_I10/9I5", "./instancias/I11-I20/11I1.txt", "./instancias/I11-I20/11I2.txt", "./instancias/I11-I20/11I3.txt", "./instancias/I11-I20/11I4.txt", "./instancias/I11-I20/11I5.txt",
+                            "./instancias/I11-I20/12I1.txt", "./instancias/I11-I20/12I2.txt", "./instancias/I11-I20/12I3.txt", "./instancias/I11-I20/12I4.txt", "./instancias/I11-I20/12I5.txt",
+                            "./instancias/I11-I20/13I1.txt", "./instancias/I11-I20/13I2.txt", "./instancias/I11-I20/13I3.txt", "./instancias/I11-I20/13I4.txt", "./instancias/I11-I20/13I5.txt",
+                            "./instancias/I11-I20/14I1.txt", "./instancias/I11-I20/14I2.txt", "./instancias/I11-I20/14I3.txt", "./instancias/I11-I20/14I4.txt", "./instancias/I11-I20/14I5.txt",
+                            "./instancias/I11-I20/15I1.txt", "./instancias/I11-I20/15I2.txt", "./instancias/I11-I20/15I3.txt", "./instancias/I11-I20/15I4.txt", "./instancias/I11-I20/15I5.txt",
+                            "./instancias/I11-I20/16I1.txt", "./instancias/I11-I20/16I2.txt", "./instancias/I11-I20/16I3.txt", "./instancias/I11-I20/16I4.txt", "./instancias/I11-I20/16I5.txt",
+                            "./instancias/I11-I20/17I1.txt", "./instancias/I11-I20/17I2.txt", "./instancias/I11-I20/17I3.txt", "./instancias/I11-I20/17I4.txt", "./instancias/I11-I20/17I5.txt",
+                            "./instancias/I11-I20/18I1.txt", "./instancias/I11-I20/18I2.txt", "./instancias/I11-I20/18I3.txt", "./instancias/I11-I20/18I4.txt", "./instancias/I11-I20/18I5.txt",
+                            "./instancias/I11-I20/19I1.txt", "./instancias/I11-I20/19I2.txt", "./instancias/I11-I20/19I3.txt", "./instancias/I11-I20/19I4.txt", "./instancias/I11-I20/19I5.txt",
+                            "./instancias/I11-I20/20I1.txt", "./instancias/I11-I20/20I2.txt", "./instancias/I11-I20/20I3.txt", "./instancias/I11-I20/20I4.txt", "./instancias/I11-I20/20I5.txt"};
+        
+        // Execucao do primeiro grupo
+        for (auto instanciaCaminho : instanciasCaminhos) {
+
+            // Realizando o experimento
+            Instancia inst = Instancia(instanciaCaminho);
+            auto inicio = std::chrono::high_resolution_clock::now();
+            Solucao sol = mt->gerarSolucao(inst);
+            auto fim = std::chrono::high_resolution_clock::now();
+
+            // Calculando metricas a serem reportadas
+            auto duracao_ms = std::chrono::duration_cast<std::chrono::milliseconds>(fim - inicio).count();
+            float fo = avaliaFO(inst, sol);
+            bool validade = avaliaValidade(inst, sol);
+            float peso = avaliaPeso(inst, sol);
+
+            logExperimento(logCaminho, mtNome, instanciaCaminho, inst.nItens, inst.nRest, inst.pesoMax, duracao_ms, fo, peso, validade);
+            cout << "Experimento com " << mtNome << " na instancia " << instanciaCaminho << " terminado!" << endl;
+        }
+    }
+    
+    delete[] mts;
+
+    return 0;
+}

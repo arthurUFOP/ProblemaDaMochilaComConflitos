@@ -92,7 +92,7 @@ Solucao DescidaInversaoDe2BitsBI::aprimorarSolucao(Instancia& inst, Solucao& sol
 
                 // Se melhorou, reinicia-se a busca com a nova solução
                 if (atualFO > melhorFO) {
-                    cout << "Melhora encontrada na DescidaInversaoDe2BitsBI. FO: " << melhorFO << " -> " << atualFO << endl;
+                    //cout << "Melhora encontrada na DescidaInversaoDe2BitsBI. FO: " << melhorFO << " -> " << atualFO << endl;
                     melhorFO = atualFO;
                     melhorSol = solAtual;
                     melhorou = true;
@@ -157,7 +157,7 @@ Solucao DescidaInversaoDe2aNBitsFI::aprimorarSolucao(Instancia& inst, Solucao& s
 
             // Se melhorou, reinicia-se a busca com a nova solução
             if (atualFO > melhorFO) {
-                cout << "Melhora encontrada na DescidaInversaoDe2aNBitsFI. FO: " << melhorFO << " -> " << atualFO << endl;
+                //cout << "Melhora encontrada na DescidaInversaoDe2aNBitsFI. FO: " << melhorFO << " -> " << atualFO << endl;
                 melhorFO = atualFO;
                 melhorSol = solAtual;
                 melhorou = true;
@@ -240,9 +240,9 @@ pair<Solucao, float> movimentoInsercaoAleatoria(Instancia& inst, Solucao& solBas
 
 DescidaDestroyAndRepair::DescidaDestroyAndRepair() {
     this->maxIter = 200;
-    this->percBase = 0.8;
+    this->percBase = 0.2;
     this->percDestruido = this->percBase;
-    this->alpha = 0.1;
+    this->alpha = 0.3;
 }
 
 DescidaDestroyAndRepair::DescidaDestroyAndRepair(int maxIter, float percBase, float alpha) {
@@ -407,6 +407,7 @@ Solucao DescidaDestroyAndRepair::aprimorarSolucao(Instancia& inst, Solucao& sol,
             atualCI = this->recomposicaoAleatoria(inst, atualCI);
 
         // Gera solucao com base no novo CI
+        this->resultadoCI = atualCI; // Utilizado pelo ILS
 
         int nItensSubproblema = 0;
         for (auto v : atualCI)
@@ -441,7 +442,7 @@ Solucao DescidaDestroyAndRepair::aprimorarSolucao(Instancia& inst, Solucao& sol,
         //foAtual = avaliaFO(inst, solAtual);
 
         if (foAtual > melhorFo) {
-            cout << "Melhora DestroyAndRepair! Fo: " << melhorFo << " --> " << foAtual << endl;
+            //cout << "Melhora DestroyAndRepair! Fo: " << melhorFo << " --> " << foAtual << endl;
             melhorFo = foAtual;
             melhorSol = solAtual;
             iter = 0;
