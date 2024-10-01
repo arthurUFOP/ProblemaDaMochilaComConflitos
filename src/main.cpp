@@ -1,6 +1,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <chrono>
+#include <string>
 #include "Instancia.h"
 #include "Solucao.h"
 #include "Avaliador.h"
@@ -16,7 +17,7 @@ using std::ofstream;
 
 #define CAMINHO_BASE "./LOGS/"
 
-/*
+
 // Main Com Menu Principal
 int menuPrincipal()
 {
@@ -311,7 +312,6 @@ int main(int argc, char** argv) {
     }
     return 0;
 }
-*/
 
 // Funcao de Log de Experimentos
 void logExperimento(string logCaminho, string metodoNome, string instanciaCaminho, int nItens, int nRest, float pesoMax, float duracao_ms, float fo, float pesoNaMochila, bool validade) {
@@ -527,6 +527,7 @@ int main(int argc, char** argv) {
 */
 
 // Main para os experimentos com as heuristicas construtivas
+/*
 int main(int argc, char** argv) {
     srand(time(NULL));
 
@@ -591,3 +592,100 @@ int main(int argc, char** argv) {
 
     return 0;
 }
+*/
+
+/*
+// IRACE do GRASP
+int main(int argc, char** argv) {
+    int graspMax;
+    float alpha;
+
+    string instanciaCaminho = argv[1];
+
+	for(int i=2; i<argc; i+=2)
+	{   
+        string str(argv[i]);
+        if(str=="--GRASP_MAX")
+            graspMax = std::stoi(argv[i+1]);
+        else if(str=="--ALPHA")
+            alpha = std::stof(argv[i+1]);
+    }
+
+    Instancia inst = Instancia(instanciaCaminho);
+
+    Metaheuristica* mt = new Grasp(alpha, graspMax);
+
+    Solucao sol = mt->gerarSolucao(inst);
+
+    float fo = avaliaFO(inst, sol);
+
+    cout << fo;
+    
+    return 0;
+}
+*/
+
+/*
+// IRACE do SA
+int main(int argc, char** argv) {
+    int saMax;
+    float t0;
+    float alpha;
+
+    string instanciaCaminho = argv[1];
+
+	for(int i=2; i<argc; i+=2)
+	{   
+        string str(argv[i]);
+        if(str=="--SA_MAX")
+            saMax = std::stoi(argv[i+1]);
+        else if(str=="--ALPHA")
+            alpha = std::stof(argv[i+1]);
+        else if(str=="--T0")
+            t0 = std::stof(argv[i+1]);
+    }
+
+    Instancia inst = Instancia(instanciaCaminho);
+
+    Metaheuristica* mt = new SimulatedAnnealing(saMax, t0, alpha);
+
+    Solucao sol = mt->gerarSolucao(inst);
+
+    float fo = avaliaFO(inst, sol);
+
+    cout << fo;
+    
+    return 0;
+}
+*/
+
+/*
+// IRACE do ILS
+int main(int argc, char** argv) {
+    int ilsMax;
+    int vezesMax;
+
+    string instanciaCaminho = argv[1];
+
+	for(int i=2; i<argc; i+=2)
+	{   
+        string str(argv[i]);
+        if(str=="--ILS_MAX")
+            ilsMax = std::stoi(argv[i+1]);
+        else if(str=="--VEZES_MAX")
+            vezesMax = std::stoi(argv[i+1]);
+    }
+
+    Instancia inst = Instancia(instanciaCaminho);
+
+    Metaheuristica* mt = new ILS(ilsMax, vezesMax);
+
+    Solucao sol = mt->gerarSolucao(inst);
+
+    float fo = avaliaFO(inst, sol);
+
+    cout << fo;
+    
+    return 0;
+}
+*/
