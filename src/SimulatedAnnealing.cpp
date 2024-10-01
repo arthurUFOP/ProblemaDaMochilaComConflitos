@@ -16,24 +16,24 @@ SimulatedAnnealing::~SimulatedAnnealing() {}
 
 Solucao SimulatedAnnealing::geraVizinho(Solucao& sol) {
     Solucao vizinho = sol;
-    int bit1=-1, bit0=-1, i;
+    int i;
 
     // Encontra um item a ser adicionado
-    while (bit0==-1) {
+    for (int j=0; j<10; j++) {
         i = rand()%sol.size();
         if (sol.at(i)==0) {
             vizinho.at(i) = 1;
-            bit0 = 0;
+            break;
         }
         
     }
 
     // Encontra um item a ser removido
-    while (bit1==-1) {
+    for (int j=0; j<10; j++) {
         i = rand()%sol.size();
         if (sol.at(i)==1) {
             vizinho.at(i) = 0;
-            bit1 = 0;
+            break;
         }
     }
 
