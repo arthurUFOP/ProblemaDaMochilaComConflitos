@@ -526,7 +526,7 @@ int main(int argc, char** argv) {
 }
 */
 
-// Main para os experimentos com as heuristicas construtivas
+// Main para os experimentos com as metaheuristicas
 /*
 int main(int argc, char** argv) {
     srand(time(NULL));
